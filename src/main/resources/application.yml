@@ -3,6 +3,16 @@ spring:
     name: spatial-data-streaming-poc
   profiles:
     active: local
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: false
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        order_updates: true
 
 ---
 spring:
