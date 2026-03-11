@@ -1,11 +1,12 @@
 package dev.yukmekim.spatialdatastreamingpoc.service;
 
-import dev.yukmekim.spatialdatastreamingpoc.dto.request.ScanDataRequestDto;
+import dev.yukmekim.spatialdatastreamingpoc.dto.request.AppleItemRequestDto;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -16,15 +17,19 @@ public class ScanQueueService {
 
     private final ScanService scanService;
 
+    // 내부 처리를 위한 래퍼 레코드
+    public record QueuedScanRequest(String versionCode, List<AppleItemRequestDto> items) {}
+
     // 인메모리 큐: 최대 100개의 분할 패킷(2만건씩 100번 = 200만건어치) 수용 가능
-    private final BlockingQueue<ScanDataRequestDto> scanDataQueue = new LinkedBlockingQueue<>(100);
+    private final BlockingQueue<QueuedScanRequest> scanDataQueue = new LinkedBlockingQueue<>(100);
 
     /**
      * 외부 API로부터 요청된 데이터를 큐에 적재합니다. (비동기 응답용)
      */
-    public void enqueue(ScanDataRequestDto request) {
+    public void enqueue(String versionCode, List<AppleItemRequestDto> items) {
+        QueuedScanRequest request = new QueuedScanRequest(versionCode, items);
         if (!scanDataQueue.offer(request)) {
-            log.error("Scan Data Queue is Full! 수신된 데이터를 버립니다. 버전: {}", request.getVersionCode());
+            log.error("Scan Data Queue is Full! 수신된 데이터를 버립니다. 버전: {}", versionCode);
             // 필요에 따라 Queue Full Exception 처리 가능 (현재는 로깅만)
             throw new RuntimeException("서버 데이터 처리량이 포화상태입니다. 잠시 후 묶음(Chunk)부터 재시도 해주세요.");
         }
@@ -42,11 +47,11 @@ public class ScanQueueService {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     // 큐에 데이터가 들어올 때까지 대기(Blocked)
-                    ScanDataRequestDto request = scanDataQueue.take();
+                    QueuedScanRequest request = scanDataQueue.take();
                     log.info("대기열에서 스캔 데이터 추출. 처리를 시작합니다. 남은 대기열: {}", scanDataQueue.size());
                     
                     // 기존 동기식 파티셔닝 빛 파일 쓰기 로직 실행
-                    scanService.processScanData(request);
+                    scanService.processScanData(request.versionCode(), request.items());
                     
                 } catch (InterruptedException e) {
                     log.warn("Queue Worker 스레드가 인터럽트 되었습니다. 종료합니다.");

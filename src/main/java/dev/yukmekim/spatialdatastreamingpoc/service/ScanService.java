@@ -3,7 +3,6 @@ package dev.yukmekim.spatialdatastreamingpoc.service;
 import dev.yukmekim.spatialdatastreamingpoc.domain.ScanAreaDataInfo;
 import dev.yukmekim.spatialdatastreamingpoc.domain.ScanFileInfo;
 import dev.yukmekim.spatialdatastreamingpoc.dto.request.AppleItemRequestDto;
-import dev.yukmekim.spatialdatastreamingpoc.dto.request.ScanDataRequestDto;
 import dev.yukmekim.spatialdatastreamingpoc.dto.response.ScanProcessResponseDto;
 import dev.yukmekim.spatialdatastreamingpoc.repository.ScanAreaDataInfoRepository;
 import dev.yukmekim.spatialdatastreamingpoc.repository.ScanFileInfoRepository;
@@ -29,32 +28,34 @@ public class ScanService {
     private final ScanPartitionService scanPartitionService;
     private final ScanFileWriteService scanFileWriteService;
 
-    public ScanProcessResponseDto processScanData(ScanDataRequestDto request) {
-        ScanFileInfo scanFileInfo = getOrCreateScanFileInfo(request);
+    public ScanProcessResponseDto processScanData(String versionCode, List<AppleItemRequestDto> items) {
+        ScanFileInfo scanFileInfo = getOrCreateScanFileInfo(versionCode);
 
         Map<GridCell, List<AppleItemRequestDto>> grouped =
-                scanPartitionService.groupByCell(request.getData());
+                scanPartitionService.groupByCell(items);
 
         List<ScanAreaDataInfo> areaDataList = buildAreaDataList(scanFileInfo, grouped);
         scanAreaDataInfoRepository.saveAll(areaDataList);
 
         log.info("스캔 데이터 처리 완료 - 버전: {}, 수신: {}건, 처리 구역: {}개",
-                scanFileInfo.getVersionCode(), request.getData().size(), areaDataList.size());
+                scanFileInfo.getVersionCode(), items.size(), areaDataList.size());
 
         return ScanProcessResponseDto.builder()
                 .versionCode(scanFileInfo.getVersionCode())
-                .receivedCount(request.getData().size())
+                .receivedCount(items.size())
                 .upsertedAreaCount(areaDataList.size())
                 .build();
     }
 
-    private ScanFileInfo getOrCreateScanFileInfo(ScanDataRequestDto request) {
-        return scanFileInfoRepository.findByVersionCode(request.getVersionCode())
+    private ScanFileInfo getOrCreateScanFileInfo(String versionCode) {
+        return scanFileInfoRepository.findByVersionCode(versionCode)
                 .orElseGet(() -> scanFileInfoRepository.save(
                         ScanFileInfo.builder()
-                                .versionCode(request.getVersionCode())
-                                .baseDirPath(Path.of(request.getBaseDirPath(), request.getVersionCode()).toString())
-                                .date(request.getScanDate())
+                                .versionCode(versionCode)
+                                // baseDirPath는 설정 파일(임시로 /tmp/farm/uploads)이나 상수 등에서 관리할 수 있으나
+                                // 본 PoC에서는 이전과 동일한 포맷 유지를 위해 하드코딩된 기본 루트를 생성 시 할당합니다.
+                                .baseDirPath(Path.of("/tmp/farm/uploads", versionCode).toString())
+                                .date(java.time.LocalDate.now())
                                 .build()
                 ));
     }
