@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,5 +28,6 @@ public class ScanDataRequestDto {
 
     @Valid
     @NotEmpty(message = "스캔 데이터는 1건 이상이어야 합니다.")
+    @Size(max = 100000, message = "데이터는 1회 최대 10만 건까지만 전송 가능합니다. 10만 건을 초과할 경우 분할하여 전송해주세요.")
     private List<AppleItemRequestDto> data;
 }

@@ -9,16 +9,16 @@ import lombok.NoArgsConstructor;
 public class PoseDto {
 
     @NotNull
-    private Float tx;
+    private Double tx;
 
     @NotNull
-    private Float ty;
+    private Double ty;
 
     @NotNull
-    private Float tz;
+    private Double tz;
 
-    private Float qw;
-    private Float qx;
-    private Float qy;
-    private Float qz;
+    private Double qw;
+    private Double qx;
+    private Double qy;
+    private Double qz;
 }
