@@ -35,7 +35,7 @@ public class ScanPartitionService {
     public Map<GridCell, List<AppleItemRequestDto>> groupByCell(List<AppleItemRequestDto> data) {
         return data.stream()
                 .collect(Collectors.groupingBy(
-                        item -> resolveCell(item.getPose().getTx(), item.getPose().getTz())
+                        item -> resolveCell(item.getPose().getTx().floatValue(), item.getPose().getTz().floatValue())
                 ));
     }
 
