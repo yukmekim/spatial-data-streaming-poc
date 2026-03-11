@@ -15,7 +15,8 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S001", "서버 오류가 발생했습니다."),
 
     // File
-    FILE_IO_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "F001", "파일 저장 중 오류가 발생했습니다.");
+    FILE_IO_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "F001", "파일 저장 중 오류가 발생했습니다."),
+    FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "F002", "해당 파일(파티셔닝 완료된 JSON)을 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final String code;
