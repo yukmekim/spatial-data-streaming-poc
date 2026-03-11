@@ -47,6 +47,10 @@ public class ScanPartitionService {
         return Math.round(value * 100) / 100.0f;
     }
 
+    public String generateKey(float startX, float startZ) {
+        return formatCoord(startX) + "_" + formatCoord(startZ);
+    }
+
     private String formatCoord(float value) {
         BigDecimal bd = BigDecimal.valueOf(Math.round(value * 100))
                 .divide(BigDecimal.valueOf(100))

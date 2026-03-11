@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -63,16 +64,24 @@ public class ScanService {
             Map<GridCell, List<AppleItemRequestDto>> grouped) {
 
         List<ScanAreaDataInfo> result = new ArrayList<>();
+        
+        // N+1 문제 해결: 해당 버전의 구역 정보를 한 번에 읽어와서 메모리에 Map으로 캐싱
+        List<ScanAreaDataInfo> existingAreas = scanAreaDataInfoRepository.findAllByScanFileInfoIdWithFetch(scanFileInfo.getId());
+        Map<String, ScanAreaDataInfo> areaMap = existingAreas.stream()
+                .collect(Collectors.toMap(
+                        a -> scanPartitionService.generateKey(a.getStartX(), a.getStartZ()),
+                        a -> a
+                ));
 
         for (Map.Entry<GridCell, List<AppleItemRequestDto>> entry : grouped.entrySet()) {
             GridCell cell = entry.getKey();
             List<AppleItemRequestDto> items = entry.getValue();
             String fileName = scanPartitionService.generateFileName(cell);
+            String cellKey = scanPartitionService.generateKey(cell.startX(), cell.startZ());
             int[] counts = countByGrade(items);
 
-            ScanAreaDataInfo areaData = scanAreaDataInfoRepository
-                    .findByScanFileInfoAndStartXAndStartZ(scanFileInfo, cell.startX(), cell.startZ())
-                    .orElseGet(() -> ScanAreaDataInfo.builder()
+            ScanAreaDataInfo areaData = areaMap.getOrDefault(cellKey, 
+                    ScanAreaDataInfo.builder()
                             .scanFileInfo(scanFileInfo)
                             .startX(cell.startX())
                             .endX(cell.endX())
@@ -83,7 +92,8 @@ public class ScanService {
                             .cntGrade2(0)
                             .cntGrade3(0)
                             .fileName(fileName)
-                            .build());
+                            .build()
+            );
 
             areaData.accumulateCounts(counts[0], counts[1], counts[2], counts[3]);
             scanFileWriteService.writeOrAppend(scanFileInfo.getBaseDirPath(), fileName, items);
