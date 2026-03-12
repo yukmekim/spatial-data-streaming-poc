@@ -16,7 +16,10 @@ public enum ErrorCode {
 
     // File
     FILE_IO_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "F001", "파일 저장 중 오류가 발생했습니다."),
-    FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "F002", "해당 파일(파티셔닝 완료된 JSON)을 찾을 수 없습니다.");
+    FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "F002", "해당 파일(파티셔닝 완료된 JSON)을 찾을 수 없습니다."),
+
+    // Queue
+    QUEUE_FULL(HttpStatus.SERVICE_UNAVAILABLE, "Q001", "서버 처리 대기열이 포화 상태입니다. 잠시 후 재시도해주세요.");
 
     private final HttpStatus status;
     private final String code;

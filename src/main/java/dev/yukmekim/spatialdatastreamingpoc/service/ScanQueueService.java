@@ -1,5 +1,7 @@
 package dev.yukmekim.spatialdatastreamingpoc.service;
 
+import dev.yukmekim.spatialdatastreamingpoc.common.exception.BusinessException;
+import dev.yukmekim.spatialdatastreamingpoc.common.exception.ErrorCode;
 import dev.yukmekim.spatialdatastreamingpoc.dto.request.AppleItemRequestDto;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +32,7 @@ public class ScanQueueService {
         QueuedScanRequest request = new QueuedScanRequest(versionCode, items);
         if (!scanDataQueue.offer(request)) {
             log.error("Scan Data Queue is Full! 수신된 데이터를 버립니다. 버전: {}", versionCode);
-            // 필요에 따라 Queue Full Exception 처리 가능 (현재는 로깅만)
-            throw new RuntimeException("서버 데이터 처리량이 포화상태입니다. 잠시 후 묶음(Chunk)부터 재시도 해주세요.");
+            throw new BusinessException(ErrorCode.QUEUE_FULL);
         }
         log.info("스캔 데이터 큐 적재 성공 - 현재 대기열: {}개", scanDataQueue.size());
     }

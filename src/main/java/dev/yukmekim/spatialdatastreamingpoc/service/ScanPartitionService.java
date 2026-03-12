@@ -1,14 +1,14 @@
 package dev.yukmekim.spatialdatastreamingpoc.service;
 
 import dev.yukmekim.spatialdatastreamingpoc.dto.request.AppleItemRequestDto;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 public class ScanPartitionService {
 
     private static final float X_MIN = -5.0f;

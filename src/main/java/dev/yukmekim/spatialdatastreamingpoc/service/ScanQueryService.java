@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,8 +41,13 @@ public class ScanQueryService {
         ScanFileInfo fileInfo = scanFileInfoRepository.findByVersionCode(versionCode)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 
-        Path filePath = Paths.get(fileInfo.getBaseDirPath(), fileName);
-        
+        Path basePath = Path.of(fileInfo.getBaseDirPath()).normalize();
+        Path filePath = basePath.resolve(fileName).normalize();
+
+        if (!filePath.startsWith(basePath)) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
         if (!Files.exists(filePath)) {
             log.error("요청한 파일이 존재하지 않습니다: {}", filePath.toAbsolutePath());
             throw new BusinessException(ErrorCode.FILE_NOT_FOUND);
