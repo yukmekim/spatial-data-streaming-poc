@@ -20,9 +20,6 @@ public class ScanAreaDataInfo extends BaseTime {
     @JoinColumn(name = "scan_file_info_id", nullable = false)
     private ScanFileInfo scanFileInfo;
 
-    @Column(name = "sort")
-    private Integer sort;
-
     @Column(name = "start_x", nullable = false)
     private Float startX;
 
@@ -51,12 +48,11 @@ public class ScanAreaDataInfo extends BaseTime {
     private String fileName;
 
     @Builder
-    public ScanAreaDataInfo(ScanFileInfo scanFileInfo, Integer sort,
+    public ScanAreaDataInfo(ScanFileInfo scanFileInfo,
                             Float startX, Float endX, Float startZ, Float endZ,
                             int cntGrade0, int cntGrade1, int cntGrade2, int cntGrade3,
                             String fileName) {
         this.scanFileInfo = scanFileInfo;
-        this.sort = sort;
         this.startX = startX;
         this.endX = endX;
         this.startZ = startZ;
