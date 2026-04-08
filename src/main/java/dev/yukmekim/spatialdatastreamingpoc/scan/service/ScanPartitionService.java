@@ -1,7 +1,7 @@
-package dev.yukmekim.spatialdatastreamingpoc.service;
+package dev.yukmekim.spatialdatastreamingpoc.scan.service;
 
-import dev.yukmekim.spatialdatastreamingpoc.config.ScanProperties;
-import dev.yukmekim.spatialdatastreamingpoc.dto.request.AppleItemRequestDto;
+import dev.yukmekim.spatialdatastreamingpoc.scan.config.ScanProperties;
+import dev.yukmekim.spatialdatastreamingpoc.scan.dto.request.AppleItemRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

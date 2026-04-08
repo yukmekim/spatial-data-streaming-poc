@@ -1,4 +1,4 @@
-package dev.yukmekim.spatialdatastreamingpoc.config;
+package dev.yukmekim.spatialdatastreamingpoc.scan.config;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

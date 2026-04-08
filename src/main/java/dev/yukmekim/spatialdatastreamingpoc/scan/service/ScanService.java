@@ -1,12 +1,12 @@
-package dev.yukmekim.spatialdatastreamingpoc.service;
+package dev.yukmekim.spatialdatastreamingpoc.scan.service;
 
-import dev.yukmekim.spatialdatastreamingpoc.config.ScanProperties;
-import dev.yukmekim.spatialdatastreamingpoc.domain.ScanAreaDataInfo;
-import dev.yukmekim.spatialdatastreamingpoc.domain.ScanFileInfo;
-import dev.yukmekim.spatialdatastreamingpoc.dto.request.AppleItemRequestDto;
-import dev.yukmekim.spatialdatastreamingpoc.dto.response.ScanProcessResponseDto;
-import dev.yukmekim.spatialdatastreamingpoc.repository.ScanAreaDataInfoRepository;
-import dev.yukmekim.spatialdatastreamingpoc.repository.ScanFileInfoRepository;
+import dev.yukmekim.spatialdatastreamingpoc.scan.config.ScanProperties;
+import dev.yukmekim.spatialdatastreamingpoc.scan.domain.ScanAreaDataInfo;
+import dev.yukmekim.spatialdatastreamingpoc.scan.domain.ScanFileInfo;
+import dev.yukmekim.spatialdatastreamingpoc.scan.dto.request.AppleItemRequestDto;
+import dev.yukmekim.spatialdatastreamingpoc.scan.dto.response.ScanProcessResponseDto;
+import dev.yukmekim.spatialdatastreamingpoc.scan.repository.ScanAreaDataInfoRepository;
+import dev.yukmekim.spatialdatastreamingpoc.scan.repository.ScanFileInfoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

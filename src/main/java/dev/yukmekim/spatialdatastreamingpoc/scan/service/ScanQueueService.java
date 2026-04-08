@@ -1,9 +1,9 @@
-package dev.yukmekim.spatialdatastreamingpoc.service;
+package dev.yukmekim.spatialdatastreamingpoc.scan.service;
 
 import dev.yukmekim.spatialdatastreamingpoc.common.exception.BusinessException;
 import dev.yukmekim.spatialdatastreamingpoc.common.exception.ErrorCode;
-import dev.yukmekim.spatialdatastreamingpoc.config.ScanProperties;
-import dev.yukmekim.spatialdatastreamingpoc.dto.request.AppleItemRequestDto;
+import dev.yukmekim.spatialdatastreamingpoc.scan.config.ScanProperties;
+import dev.yukmekim.spatialdatastreamingpoc.scan.dto.request.AppleItemRequestDto;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
