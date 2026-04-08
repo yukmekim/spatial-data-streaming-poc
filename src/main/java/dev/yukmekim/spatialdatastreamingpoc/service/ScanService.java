@@ -1,5 +1,6 @@
 package dev.yukmekim.spatialdatastreamingpoc.service;
 
+import dev.yukmekim.spatialdatastreamingpoc.config.ScanProperties;
 import dev.yukmekim.spatialdatastreamingpoc.domain.ScanAreaDataInfo;
 import dev.yukmekim.spatialdatastreamingpoc.domain.ScanFileInfo;
 import dev.yukmekim.spatialdatastreamingpoc.dto.request.AppleItemRequestDto;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ScanService {
 
+    private final ScanProperties scanProperties;
     private final ScanFileInfoRepository scanFileInfoRepository;
     private final ScanAreaDataInfoRepository scanAreaDataInfoRepository;
     private final ScanPartitionService scanPartitionService;
@@ -52,9 +54,7 @@ public class ScanService {
                 .orElseGet(() -> scanFileInfoRepository.save(
                         ScanFileInfo.builder()
                                 .versionCode(versionCode)
-                                // baseDirPath는 설정 파일(임시로 /tmp/farm/uploads)이나 상수 등에서 관리할 수 있으나
-                                // 본 PoC에서는 이전과 동일한 포맷 유지를 위해 하드코딩된 기본 루트를 생성 시 할당합니다.
-                                .baseDirPath(Path.of("/tmp/farm/uploads", versionCode).toString())
+                                .baseDirPath(Path.of(scanProperties.baseDir(), versionCode).toString())
                                 .date(java.time.LocalDate.now())
                                 .build()
                 ));

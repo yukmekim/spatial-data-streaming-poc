@@ -2,9 +2,9 @@ package dev.yukmekim.spatialdatastreamingpoc.service;
 
 import dev.yukmekim.spatialdatastreamingpoc.common.exception.BusinessException;
 import dev.yukmekim.spatialdatastreamingpoc.common.exception.ErrorCode;
+import dev.yukmekim.spatialdatastreamingpoc.config.ScanProperties;
 import dev.yukmekim.spatialdatastreamingpoc.dto.request.AppleItemRequestDto;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -14,16 +14,17 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class ScanQueueService {
 
     private final ScanService scanService;
+    private final BlockingQueue<QueuedScanRequest> scanDataQueue;
 
-    // 내부 처리를 위한 래퍼 레코드
     public record QueuedScanRequest(String versionCode, List<AppleItemRequestDto> items) {}
 
-    // 인메모리 큐: 최대 100개의 분할 패킷(2만건씩 100번 = 200만건어치) 수용 가능
-    private final BlockingQueue<QueuedScanRequest> scanDataQueue = new LinkedBlockingQueue<>(100);
+    public ScanQueueService(ScanService scanService, ScanProperties scanProperties) {
+        this.scanService = scanService;
+        this.scanDataQueue = new LinkedBlockingQueue<>(scanProperties.queueCapacity());
+    }
 
     /**
      * 외부 API로부터 요청된 데이터를 큐에 적재합니다. (비동기 응답용)

@@ -1,6 +1,8 @@
 package dev.yukmekim.spatialdatastreamingpoc.service;
 
+import dev.yukmekim.spatialdatastreamingpoc.config.ScanProperties;
 import dev.yukmekim.spatialdatastreamingpoc.dto.request.AppleItemRequestDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -9,21 +11,20 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ScanPartitionService {
 
-    private static final float X_MIN = -5.0f;
-    private static final float Z_MIN = -5.0f;
-    private static final float STEP = 0.25f;
-    private static final int GRID_COUNT = 40;
+    private final ScanProperties scanProperties;
 
     public GridCell resolveCell(float tx, float tz) {
-        int xIdx = clamp((int) Math.floor((tx - X_MIN) / STEP));
-        int zIdx = clamp((int) Math.floor((tz - Z_MIN) / STEP));
+        ScanProperties.Partition p = scanProperties.partition();
+        int xIdx = clamp((int) Math.floor((tx - p.xMin()) / p.step()));
+        int zIdx = clamp((int) Math.floor((tz - p.zMin()) / p.step()));
 
-        float startX = roundCoord(X_MIN + xIdx * STEP);
-        float startZ = roundCoord(Z_MIN + zIdx * STEP);
+        float startX = roundCoord(p.xMin() + xIdx * p.step());
+        float startZ = roundCoord(p.zMin() + zIdx * p.step());
 
-        return new GridCell(startX, roundCoord(startX + STEP), startZ, roundCoord(startZ + STEP));
+        return new GridCell(startX, roundCoord(startX + p.step()), startZ, roundCoord(startZ + p.step()));
     }
 
     public String generateFileName(GridCell cell) {
@@ -40,7 +41,7 @@ public class ScanPartitionService {
     }
 
     private int clamp(int idx) {
-        return Math.max(0, Math.min(GRID_COUNT - 1, idx));
+        return Math.max(0, Math.min(scanProperties.partition().gridCount() - 1, idx));
     }
 
     private float roundCoord(float value) {
